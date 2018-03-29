@@ -65,6 +65,8 @@ def urlGen(tags=None, limit=None, id=None, PID=None, deleted=None, **kwargs):
         if str(tags) == "":
             raise Request_Rejected('Submitting this action WILL result in your API access being suspended due to API abuse\nReason: tag="" will request every single image on rule34')
         URL += "&tags={}".format(tags)
+    if deleted == True:
+        url += "&deleted=show"
     if PID != None or limit != None or id != None or tags != None:
         return URL
     else:
