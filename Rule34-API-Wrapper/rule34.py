@@ -2,20 +2,24 @@ from __future__ import print_function
 from collections import defaultdict
 from xml.etree import cElementTree as ET
 import urllib.request
-import time
 
-class rule34Exception(Exception):
+class Rule34_Error(Exception):
     """Rule34 rejected you"""
     def __init__(self, message, *args):
         self.message = message
-        super(rule34Exception, self).__init__(message, *args)
+        super(Rule34_Error, self).__init__(message, *args)
+class Request_Rejected(Exception):
+    """The Rule34 API wrapper rejected your request"""
+    def __init__(self, message, *args):
+        self.message = message
+        super(Request_Rejected, self).__init__(message, *args)
 
 
 def ParseXML(rawXML):
-    ###Using https://stackoverflow.com/a/10077069###
-    print(rawXML.items())
+    """Parses entities as well as attributes following this XML-to-JSON "specification"
+    Using https://stackoverflow.com/a/10077069"""
     if "Search error: API limited due to abuse" in str(rawXML.items()):
-        raise rule34Exception('Rule34 rejected your request due to "API abuse"')
+        raise Rule34_Error('Rule34 rejected your request due to "API abuse"')
 
     d = {rawXML.tag: {} if rawXML.attrib else None}
     children = list(rawXML)
@@ -36,14 +40,16 @@ def ParseXML(rawXML):
             d[rawXML.tag] = text
     return d
 
-def urlGen(tags=None, limit=None, id=None, PID=None, **kwargs):
+def urlGen(tags=None, limit=None, id=None, PID=None, deleted=None, **kwargs):
     """Generates a URL to access the api using your input:
     Arguments:
-        "limit"||How many posts you want to retrieve
-        "pid"  ||The page number.
-        "tags" ||The tags to search for. Any tag combination that works on the web site will work here. This includes all the meta-tags. See cheatsheet for more information.
-        "cid"  ||Change ID of the post. This is in Unix time so there are likely others with the same value if updated at the same time.
-        "id"   ||The post id.
+        "limit"  ||str ||How many posts you want to retrieve
+        "pid"    ||int ||The page number.
+        "tags"   ||str ||The tags to search for. Any tag combination that works on the web site will work here. This includes all the meta-tags. See cheatsheet for more information.
+        "cid"    ||str ||Change ID of the post. This is in Unix time so there are likely others with the same value if updated at the same time.
+        "id"     ||int ||The post id.
+        "deleted"||bool||If True, deleted posts will be included in the data
+    All arguments that accept strings *can* accept int, but strings are recommended
     If none of these arguments are passed, None will be returned
     """
     URL = "https://rule34.xxx/index.php?page=dapi&s=post&q=index"
@@ -53,9 +59,11 @@ def urlGen(tags=None, limit=None, id=None, PID=None, **kwargs):
     if limit != None:
         URL += "&limit={}".format(limit)
     if id != None:
-        id += "&id={}".format(id)
+        URL += "&id={}".format(id)
     if tags != None:
         tags = str(tags).replace(" ", "+")
+        if str(tags) == "":
+            raise Request_Rejected('Submitting this action WILL result in your API access being suspended due to API abuse\nReason: tag="" will request every single image on rule34')
         URL += "&tags={}".format(tags)
     if PID != None or limit != None or id != None or tags != None:
         return URL
@@ -63,7 +71,8 @@ def urlGen(tags=None, limit=None, id=None, PID=None, **kwargs):
         return None
 
 def totalImages(tags):
-    """Get an int of how many images are on rule34.xxx"""
+    """Get an int of how many images are on rule34.xxx
+    Argument: tags (string)"""
     XMLData = urllib.request.urlopen(urlGen(tags)).read()
     XMLData = ET.XML(XMLData)
     XML = ParseXML(XMLData)
@@ -71,7 +80,8 @@ def totalImages(tags):
 
 def getImageURLS(tags):
     """Returns a list of all images/webms/gifs it can find
-    This function can take a LONG time to finish with huge tags. E.G. in my testing "gay" took 200seconds to finish (740 pages)"""
+    This function can take a LONG time to finish with huge tags. E.G. in my testing "gay" took 200seconds to finish (740 pages)
+    Argument: tags (string)"""
     
     imgList = []
     if totalImages(tags) != 0:
@@ -95,9 +105,11 @@ def getImageURLS(tags):
         return None
 
 def getPostData(PostID):
-    """"Unfinished function"""
-    return
-    url = urlGen(PID=str(PostID))
-    print(url)
+    """"Returns a dict with all the information available about the post
+    Argument: PostID (string or ID)"""
+    url = urlGen(id=str(PostID))
     XML = urllib.request.urlopen(url).read()
     XML = ParseXML(ET.XML(XML))
+    data = XML['posts']['post']
+
+getPostData(2702371)
