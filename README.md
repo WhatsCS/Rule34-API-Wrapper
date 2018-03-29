@@ -12,7 +12,7 @@ Each function has a docstring that explains what it is, and what arguments it ne
   - Generates a URL based on arguments which is used to obtain an XML document  
 
 | Argument      | Purpose                          |Usage                      | Type  |
-| ------------- |:--------------------------------:|--------------------------:| -----:|
+| ------------- |:--------------------------------:|:-------------------------:|:-----:|
 | tags          |A search term                     |`urlGen(tags="furry")`     |str/int|
 | limit         |A limit of how many posts you want|`urlGen([args],limit=100)` |str/int|
 | id            |An Id of the post                 |`urlGen(id=12312)`         |str/int|
@@ -23,19 +23,19 @@ Each function has a docstring that explains what it is, and what arguments it ne
   - returns an int of how many posts match a tag  
   
 | Argument      | Purpose                          |Usage                      | Type  |
-| ------------- |:--------------------------------:|--------------------------:| -----:|
+| ------------- |:--------------------------------:|:-------------------------:|:-----:|
 |tags           |A search term                     |`totalImages("furry")`     |str    |
 
 - ``getImageURLS(tags)``  
   - returns a list of urls for every post's image/webm/gif
   
 | Argument      | Purpose                          |Usage                      | Type  |
-| ------------- |:--------------------------------:|--------------------------:| -----:|
+| ------------- |:--------------------------------:|:-------------------------:|:-----:|
 |tags           |A search term                     |`getImageURLS(tags)`       |str    |
 
 - ``getPostData(PostID)``
   - returns a dictionary of information about a post
   
 | Argument      | Purpose                          |Usage                      | Type  |
-| ------------- |:--------------------------------:|--------------------------:| -----:|
+| ------------- |:--------------------------------:|:-------------------------:|:-----:|
 |PostID         |The ID of a post                  |`getPostData(12345)`       |str/int|
