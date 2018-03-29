@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ba7f8c0d-b032-4aa0-820c-3b5d5521e2ea</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Rule34_API_Wrapper.py</StartupFile>
+    <StartupFile>rule34.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,7 +21,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Rule34_API_Wrapper.py" />
+    <Compile Include="rule34.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
