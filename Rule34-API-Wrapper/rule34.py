@@ -113,5 +113,3 @@ def getPostData(PostID):
     XML = urllib.request.urlopen(url).read()
     XML = ParseXML(ET.XML(XML))
     data = XML['posts']['post']
-
-getPostData(2702371)
