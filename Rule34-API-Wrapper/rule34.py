@@ -52,6 +52,7 @@ def urlGen(tags=None, limit=None, id=None, PID=None, deleted=None, **kwargs):
     All arguments that accept strings *can* accept int, but strings are recommended
     If none of these arguments are passed, None will be returned
     """
+    #I have no intentions of adding "&last_id=" simply because its response can easily be massive, and all it returns is ``<post deleted="[ID]" md5="[String]"/>`` which has no use as far as im aware
     URL = "https://rule34.xxx/index.php?page=dapi&s=post&q=index"
     
     if PID != None:
