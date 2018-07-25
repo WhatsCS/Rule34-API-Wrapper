@@ -1,11 +1,37 @@
+[![](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper.svg?branch=master)](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper)[![](http://pepy.tech/badge/rule34)](http://pepy.tech/project/rule34)![](https://img.shields.io/pypi/pyversions/rule34.svg)![](https://img.shields.io/pypi/v/rule34.svg)![GitHub issues](https://img.shields.io/github/issues-raw/LordOfPolls/Rule34-API-Wrapper.svg)
 # Rule34.xxx API Wrapper
 
-This is a simple module for simplifying access to the rule34.xxx API
+This is a simple module for simplifying access to the rule34.xxx API asynchronously
+
+To assist bot developers, this wrapper doesnt use ``requests`` at all. Instead it uses aiohttp and coroutines. 
+
+If you arent coding asynchronously, simply use these lines when importing this api:
+```python
+import asyncio
+import rule34
+loop = asyncio.get_event_loop()
+rule34 = rule34.Rule34(loop)
+```
+and then when calling the wrapper, use ``data = loop.run_until_complete(rule34.getImageURLS("SearchQuery"))``. An update is coming to simplify this
 
 # How do i install this?  
-### Via pip:  
+### From Pypi:  
 ``pip install rule34``
+### From github
+``pip install https://github.com/LordOfPolls/Rule34-API-Wrapper/archive/master.zip --upgrade ``
 
+# Want to help improve the wrapper?
+Sure! Just make a pull request ^-^
+
+If your change improves how the wrapper works, ill merge it!
+
+I advise you dont modify ``.travis.yml`` or the function ``selfTest``, because theyre used by travis-ci and modifying them may cause the build to fail when testing
+
+# What to do if it stops working
+1. Scream and panic at your lost porn
+2. Breathe
+2. [Make an issue on github](https://github.com/LordOfPolls/Rule34-API-Wrapper/issues/new), and be as detailed as possible
+(screenshots and tracebacks help a lot)
 # How do i use it?  
 Each function has a docstring that explains what it is, and what arguments it needs, ill go over them simply here  
 - ``urlGen(tags, limit, id, PID, deleted)``  
@@ -32,6 +58,7 @@ Each function has a docstring that explains what it is, and what arguments it ne
 | Argument      | Purpose                          |Usage                      | Type  |
 | ------------- |:--------------------------------:|:-------------------------:|:-----:|
 |tags           |A search term                     |`getImageURLS(tags)`       |str    |
+|fuzzy          |Toggles fuzzy searching           |`getImageURLS(fuzzy=True)  |bool   |
 
 - ``getPostData(PostID)``
   - returns a dictionary of information about a post
@@ -39,3 +66,5 @@ Each function has a docstring that explains what it is, and what arguments it ne
 | Argument      | Purpose                          |Usage                      | Type  |
 | ------------- |:--------------------------------:|:-------------------------:|:-----:|
 |PostID         |The ID of a post                  |`getPostData(12345)`       |str/int|
+
+
