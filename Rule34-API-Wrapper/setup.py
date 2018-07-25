@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='rule34',
-    version=1,
+    version=1.01,
     description='An async API wrapper for rule34.xxx',
     long_description= 'An async API wrapper for rule34.xxx using aiohttp',
     long_description_content_type='text/markdown',
@@ -36,6 +36,6 @@ setup(
     project_urls={'Source': 'https://github.com/LordOfPolls/Rule34-API-Wrapper'},
     packages=find_packages(include=['rule34']),
     install_requires=['asyncio', 'aiohttp'],
-    python_requires='>=3',
+    python_requires='>=3.5',
     py_modules=["rule34"]
 )
