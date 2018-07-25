@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name='rule34',
-    version=0.5,
-    description='An API wrapper for rule34.xxx',
-    long_description= 'An API wrapper for rule34.xxx',
+    version=1,
+    description='An async API wrapper for rule34.xxx',
+    long_description= 'An async API wrapper for rule34.xxx using aiohttp',
     long_description_content_type='text/markdown',
     url='https://github.com/LordOfPolls/Rule34-API-Wrapper',
     author='LordOfPolls',
@@ -35,7 +35,7 @@ setup(
     keywords='rule34, porn, api, wrapper',
     project_urls={'Source': 'https://github.com/LordOfPolls/Rule34-API-Wrapper'},
     packages=find_packages(include=['rule34']),
-    install_requires=['requests'],
+    install_requires=['asyncio', 'aiohttp'],
     python_requires='>=3',
     py_modules=["rule34"]
 )
