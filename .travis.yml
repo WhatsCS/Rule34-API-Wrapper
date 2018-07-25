@@ -10,4 +10,4 @@ python:
 script:
   - python -m compileall ./ -f
   - pip install -e Rule34-API-Wrapper --upgrade
-  - python rule34.py
+  - python Rule34-API-Wrapper/rule34.py
