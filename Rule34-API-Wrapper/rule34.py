@@ -2,6 +2,7 @@ from __future__ import print_function
 from collections import defaultdict
 from xml.etree import cElementTree as ET
 import asyncio
+import async_timeout
 import aiohttp
 
 class Rule34_Error(Exception):
@@ -93,7 +94,7 @@ class Rule34:
         :param tags:
         :return: int
         """
-        with aiohttp.Timeout(10):
+        with async_timeout.timeout(10):
             url = self.urlGen(tags=tags, PID=0)
             async with self.session.get(url=url) as XMLData:
                 XMLData = await XMLData.read()
@@ -125,7 +126,7 @@ class Rule34:
             t = True
             tempURL = self.urlGen(tags=tags, PID=PID)
             while t:
-                with aiohttp.Timeout(10):
+                with async_timeout.timeout(10):
                     async with self.session.get(url=tempURL) as XML:
                         XML = await XML.read()
                         XML = ET.XML(XML)
@@ -151,7 +152,7 @@ class Rule34:
         """
         url = self.urlGen(id=str(PostID))
         XML =None
-        with aiohttp.Timeout(10):
+        with async_timeout.timeout(10):
             async with self.session.get(url=url) as XML:
                 XML = await XML.read()
             XML = self.ParseXML(ET.XML(XML))
