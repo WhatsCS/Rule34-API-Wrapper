@@ -1,19 +1,32 @@
-[![](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper.svg?branch=master)](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper)[![](http://pepy.tech/badge/rule34)](http://pepy.tech/project/rule34)![](https://img.shields.io/pypi/pyversions/rule34.svg)![](https://img.shields.io/pypi/v/rule34.svg)![GitHub issues](https://img.shields.io/github/issues-raw/LordOfPolls/Rule34-API-Wrapper.svg)
+[![](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper.svg?branch=master)](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper)
+[![](http://pepy.tech/badge/rule34)](http://pepy.tech/project/rule34)
+![](https://img.shields.io/pypi/pyversions/rule34.svg)
+![](https://img.shields.io/pypi/v/rule34.svg)
+![](https://img.shields.io/github/issues-raw/LordOfPolls/Rule34-API-Wrapper.svg)
 # Rule34.xxx API Wrapper
 
 This is a simple module for simplifying access to the rule34.xxx API asynchronously
 
 To assist bot developers, this wrapper doesnt use ``requests`` at all. Instead it uses aiohttp and coroutines. 
 
-If you arent coding asynchronously, simply use these lines when importing this api:
+### If you arent coding asynchronously, simply use these lines when using this api:
+```python
+import asyncio #allows you to call the coroutine
+import rule34
+loop = asyncio.get_event_loop() # create an async event loop
+rule34 = rule34.Rule34(loop) # call rule34 and give pass the event loop
+# and then when calling the wrapper, use this
+data = loop.run_until_complete(rule34.getImageURLs("SearchQuery"))
+```
+An update is coming to simplify this
+### If you are coding asynchronously use this:
 ```python
 import asyncio
 import rule34
-loop = asyncio.get_event_loop()
-rule34 = rule34.Rule34(loop)
+rule34 = rule34.Rule34([your event loop])
+# and then when calling the wrapper, use this
+await rule34.getImageURLs("SearchQuery")
 ```
-and then when calling the wrapper, use ``data = loop.run_until_complete(rule34.getImageURLS("SearchQuery"))``. An update is coming to simplify this
-
 # How do i install this?  
 ### From Pypi:  
 ``pip install rule34``
