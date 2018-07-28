@@ -1,9 +1,14 @@
 from __future__ import print_function
+
+import asyncio
+import math
+import random
 from collections import defaultdict
 from xml.etree import cElementTree as ET
-import asyncio
-import async_timeout
+
 import aiohttp
+import async_timeout
+
 
 class Rule34_Error(Exception):
     """Rule34 rejected you"""
@@ -18,11 +23,13 @@ class Request_Rejected(Exception):
         self.message = message
         super(Request_Rejected, self).__init__(message, *args)
 
+
 class SelfTest_Failed(Exception):
     """The self test failed"""
     def __init__(self, message, *args):
         self.message = message
         super(SelfTest_Failed, self).__init__(message, *args)
+
 
 class Rule34:
     def __init__(self, loop, timeout=10):
@@ -32,6 +39,7 @@ class Rule34:
         """
         self.session = aiohttp.ClientSession(loop=loop)
         self.timeout = timeout
+        self.loop = loop
 
     def ParseXML(self, rawXML):
         """Parses entities as well as attributes following this XML-to-JSON "specification"
@@ -74,6 +82,8 @@ class Rule34:
         # I have no intentions of adding "&last_id=" simply because its response can easily be massive, and all it returns is ``<post deleted="[ID]" md5="[String]"/>`` which has no use as far as im aware
         URL = "https://rule34.xxx/index.php?page=dapi&s=post&q=index"
         if PID != None:
+            if PID > 2000:
+                raise Request_Rejected("Rule34 will reject PIDs over 2000")
             URL += "&pid={}".format(PID)
         if limit != None:
             URL += "&limit={}".format(limit)
@@ -94,6 +104,8 @@ class Rule34:
         :param tags:
         :return: int
         """
+        if self.session.closed:
+            self.session = aiohttp.ClientSession(loop=self.loop)
         with async_timeout.timeout(10):
             url = self.urlGen(tags=tags, PID=0)
             async with self.session.get(url=url) as XMLData:
@@ -103,24 +115,37 @@ class Rule34:
             return int(XML['posts']['@count'])
         return None
 
-    
-    async def getImageURLS(self, tags, fuzzy=False, singlePage=False):
+    async def getImageURLS(self, tags, fuzzy=False, singlePage=True, randomPID=True, OverridePID=None):
         """gatherrs a list of image URLS
         :param tags: the tags youre searching
         :param fuzzy: enable or disable fuzzy search, default disabled
         :param singlePage: when enabled, limits the search to one page (100 images), default disabled
+        :param randomPID: when enabled, a random pageID is used, if singlePage is disabled, this is disabled
+        :param OverridePID: Allows you to specify a PID
         :return: list
         """
+        if self.session.closed:
+            self.session = aiohttp.ClientSession(loop=self.loop)
         if fuzzy:
             tags = tags.split(" ")
             for tag in tags:
                 tag = tag + "~"
             temp = " "
             tags = temp.join(tags)
-            print(tags)
+        if randomPID is True and singlePage is False:
+            randomPID = False
         num = await self.totalImages(tags)
         if num != 0:
-            PID = 0
+            if OverridePID is not None:
+                if OverridePID >2000:
+                    raise Request_Rejected("Rule34 will reject PIDs over 2000")
+            elif randomPID:
+                maxPID = 2000
+                if math.floor(num/100) < maxPID:
+                    maxPID = math.floor(num/100)
+                PID = random.randint(0, maxPID)
+            else:
+                PID = 0
             imgList = []
             XML = None
             t = True
@@ -139,10 +164,13 @@ class Rule34:
                     for data in XML['posts']['post']:
                         imgList.append(str(data['@file_url']))
                 if singlePage:
+                    self.session.close()
                     return imgList
                 PID += 1
+            self.session.close()
             return imgList
         else:
+            self.session.close()
             return None
     
     async def getPostData(self, PostID):
@@ -150,31 +178,45 @@ class Rule34:
         :param PostID: The ID of the post
         :return: dict
         """
+        if self.session.closed:
+            self.session = aiohttp.ClientSession(loop=self.loop)
         url = self.urlGen(id=str(PostID))
         XML =None
         with async_timeout.timeout(10):
             async with self.session.get(url=url) as XML:
                 XML = await XML.read()
+            self.session.close()
             XML = self.ParseXML(ET.XML(XML))
             data = XML['posts']['post']
             return data
         return None
 
+
 def selfTest():
     """
-    Self tests the script for travis-ci, i know it causes a "Unclosed client session" but it doesnt matter
+    Self tests the script for travis-ci
     """
-    try:
-        loop = asyncio.get_event_loop()
-        r34 = Rule34(loop)
-        data = loop.run_until_complete(r34.getImageURLS("gay", singlePage=True))
-        if data is not None and len(data) != 0:
-            print("self test passed")
-            exit(0)
-        else:
-            raise SelfTest_Failed("Automated self test failed to gather images")
-    except Exception as e:
-        raise SelfTest_Failed("Automated self test failed with this error:\n{}".format(e))
+    loop = asyncio.get_event_loop()
+    failed = False
+    for i in range(25):
+        try:
+            r34 = Rule34(loop)
+            data = loop.run_until_complete(r34.getImageURLS("straight", singlePage=True))
+            if data is not None and len(data) != 0:
+                print("Passed run {} with {} images{}".format(i+1, len(data), " "*20), end="\r")
+            else:
+                failed = True
+        except Exception as e:
+            loop.close()
+            raise SelfTest_Failed("Automated self test failed with this error:\n{}".format(e))
+    if failed:
+        raise SelfTest_Failed("Automated self test failed to gather images")
+    else:
+        print("Self Test Passed" + " "*20)
+        exit(0)
+    exit(1)
+
+
 
 if __name__ == "__main__":
     try:

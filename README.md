@@ -16,7 +16,7 @@ import rule34
 loop = asyncio.get_event_loop() # create an async event loop
 rule34 = rule34.Rule34(loop) # call rule34 and give pass the event loop
 # and then when calling the wrapper, use this
-data = loop.run_until_complete(rule34.getImageURLs("SearchQuery"))
+data = loop.run_until_complete(rule34.getImageURLS("SearchQuery"))
 ```
 An update is coming to simplify this
 ### If you are coding asynchronously use this:
@@ -25,7 +25,7 @@ import asyncio
 import rule34
 rule34 = rule34.Rule34([your event loop])
 # and then when calling the wrapper, use this
-await rule34.getImageURLs("SearchQuery")
+await rule34.getImageURLS("SearchQuery")
 ```
 # How do i install this?  
 ### From Pypi:  
@@ -71,7 +71,10 @@ Each function has a docstring that explains what it is, and what arguments it ne
 | Argument      | Purpose                          |Usage                      | Type  |
 | ------------- |:--------------------------------:|:-------------------------:|:-----:|
 |tags           |A search term                     |`getImageURLS(tags)`       |str    |
-|fuzzy          |Toggles fuzzy searching           |`getImageURLS(fuzzy=True)  |bool   |
+|fuzzy          |Toggles fuzzy searching           |`getImageURLS(fuzzy=True)` |bool   |
+|randomPID      |Randomises the PID when singlePage is on|`getImageURLS(randomPID=True)`|bool|
+|singlePage     |Limits search to one page (100 images)|`getImageURLS(singlePage=True`|bool|
+|OverridePID    |Allows you to choose a PID        |`getImageURLS(OverridePID=1)`|int|
 
 - ``getPostData(PostID)``
   - returns a dictionary of information about a post
