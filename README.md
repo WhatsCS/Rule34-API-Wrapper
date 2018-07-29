@@ -1,4 +1,5 @@
 [![](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper.svg?branch=master)](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper)
+[![](https://codecov.io/gh/LordOfPolls/Rule34-API-Wrapper/branch/master/graph/badge.svg)](https://codecov.io/gh/LordOfPolls/Rule34-API-Wrapper)
 [![](http://pepy.tech/badge/rule34)](http://pepy.tech/project/rule34)
 ![](https://img.shields.io/pypi/pyversions/rule34.svg)
 ![](https://img.shields.io/pypi/v/rule34.svg)
