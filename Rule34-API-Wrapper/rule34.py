@@ -172,10 +172,10 @@ class Rule34:
                     for data in XML['posts']['post']:
                         imgList.append(str(data['@file_url']))
                 if singlePage:
-                    self.session.close()
+                    await self.session.close()
                     return imgList
                 PID += 1
-            self.session.close()
+            await self.session.close()
             return imgList
         else:
             self.session.close()
@@ -193,7 +193,7 @@ class Rule34:
         with async_timeout.timeout(10):
             async with self.session.get(url=url) as XML:
                 XML = await XML.read()
-            self.session.close()
+            await self.session.close()
             try:
                 XML = self.ParseXML(ET.XML(XML))
                 data = XML['posts']['post']
