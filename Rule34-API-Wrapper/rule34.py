@@ -235,7 +235,7 @@ def selfTest():  # pragma: no cover
             selfTest()
             return
         except Exception as e:
-            r34.session.close()
+            loop.run_until_complete(r34.session.close())
             loop.close()
             raise SelfTest_Failed("Automated self test \033[91mFAILED\033[0m with this error:\n{}".format(sys.exc_info()))
         try:
@@ -252,10 +252,10 @@ def selfTest():  # pragma: no cover
         else:
             print("Run {} \033[91mFAILED\033[0m {}".format(i + 1, " " * 20))
     if failed:
-        r34.session.close()
+        loop.run_until_complete(r34.session.close())
         raise SelfTest_Failed("Automated self test \033[91mFAILED\033[0m to gather images")
     else:
-        r34.session.close()
+        loop.run_until_complete(r34.session.close())
         print("Self Test \033[92mPASSED\033[0m" + " "*20)
         exit(0)
     exit(1)

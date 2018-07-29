@@ -5,7 +5,13 @@ python:
   - "3.6"
   - "3.7-dev"
 
+install:
+  - pip install codecov
+
 script:
   - python -m compileall ./ -f
   - pip install -e Rule34-API-Wrapper --upgrade
-  - python Rule34-API-Wrapper/rule34.py
+  - coverage run Rule34-API-Wrapper/rule34.py
+
+after_success:
+  - codecov
