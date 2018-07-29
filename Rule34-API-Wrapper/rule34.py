@@ -8,23 +8,24 @@ from xml.etree import cElementTree as ET
 
 import aiohttp
 import async_timeout
+import sys
 
 
-class Rule34_Error(Exception):
+class Rule34_Error(Exception):  # pragma: no cover
     """Rule34 rejected you"""
     def __init__(self, message, *args):
         self.message = message
         super(Rule34_Error, self).__init__(message, *args)
 
 
-class Request_Rejected(Exception):
+class Request_Rejected(Exception):  # pragma: no cover
     """The Rule34 API wrapper rejected your request"""
     def __init__(self, message, *args):
         self.message = message
         super(Request_Rejected, self).__init__(message, *args)
 
 
-class SelfTest_Failed(Exception):
+class SelfTest_Failed(Exception):  # pragma: no cover
     """The self test failed"""
     def __init__(self, message, *args):
         self.message = message
@@ -40,6 +41,9 @@ class Rule34:
         self.session = aiohttp.ClientSession(loop=loop)
         self.timeout = timeout
         self.loop = loop
+
+    def session(self):
+        return self.session
 
     def ParseXML(self, rawXML):
         """Parses entities as well as attributes following this XML-to-JSON "specification"
@@ -95,7 +99,10 @@ class Rule34:
         if deleted == True:
             URL += "&deleted=show"
         if PID != None or limit != None or id != None or tags != None:
-            return URL + "&rating:explicit"
+            if id is not None:
+                return URL
+            else:
+                return URL + "&rating:explicit"
         else:
             return None
 
@@ -139,6 +146,7 @@ class Rule34:
             if OverridePID is not None:
                 if OverridePID >2000:
                     raise Request_Rejected("Rule34 will reject PIDs over 2000")
+                PID = OverridePID
             elif randomPID:
                 maxPID = 2000
                 if math.floor(num/100) < maxPID:
@@ -172,7 +180,7 @@ class Rule34:
         else:
             self.session.close()
             return None
-    
+
     async def getPostData(self, PostID):
         """Returns a dict with all the information available about the post
         :param PostID: The ID of the post
@@ -186,39 +194,75 @@ class Rule34:
             async with self.session.get(url=url) as XML:
                 XML = await XML.read()
             self.session.close()
-            XML = self.ParseXML(ET.XML(XML))
-            data = XML['posts']['post']
+            try:
+                XML = self.ParseXML(ET.XML(XML))
+                data = XML['posts']['post']
+            except ValueError:
+                return None
             return data
         return None
 
 
-def selfTest():
+def selfTest():  # pragma: no cover
     """
     Self tests the script for travis-ci
     """
     loop = asyncio.get_event_loop()
     failed = False
-    for i in range(25):
+    r34 = Rule34(loop)
+    for i in range(10):
         try:
-            r34 = Rule34(loop)
             data = loop.run_until_complete(r34.getImageURLS("straight", singlePage=True))
             if data is not None and len(data) != 0:
-                print("Passed run {} with {} images{}".format(i+1, len(data), " "*20), end="\r")
+                print("Get Image URLS \033[92mPASSED\033[0m run {}".format(i+1, " "*20), end="\r")
             else:
+                print("Get Image URLS \033[91mFAILED\033[0m run {}".format(i + 1, " " * 20))
                 failed = True
+            data = loop.run_until_complete(r34.getPostData(2852416 - i))
+            if data is not None and len(data) >= 20:
+                print("Post Data \033[92mPASSED\033[0m run {}{}".format(i+1, " "*20), end="\r")
+            else:
+                print("Post Data \033[91mFAILED\033[0m run {}{}".format(i + 1, " " * 20))
+                failed = True
+            data = loop.run_until_complete(r34.totalImages("straight"))
+            if data is not None and data > 100:
+                print("Total Images \033[92mPASSED\033[0m run {}{}".format(i, " "*20), end="\r")
+            else:
+                print("Post Data \033[91mFAILED\033[0m run {}{}".format(i + 1, " " * 20))
+                failed = True
+        except aiohttp.errors.ClientOSError:
+            print("aiohttp failed to connect, restarting")
+            selfTest()
+            return
         except Exception as e:
+            r34.session.close()
             loop.close()
-            raise SelfTest_Failed("Automated self test failed with this error:\n{}".format(e))
+            raise SelfTest_Failed("Automated self test \033[91mFAILED\033[0m with this error:\n{}".format(sys.exc_info()))
+        try:
+            print("Testing getImageURLS args", end="\r")
+            data = loop.run_until_complete(r34.getImageURLS("straight", singlePage=True, OverridePID=1))
+            data = loop.run_until_complete(r34.getImageURLS("straight", singlePage=True, fuzzy=True))
+            data = loop.run_until_complete(r34.getImageURLS("porn", singlePage=False, randomPID=True))
+        except Exception as e:
+            print(e)
+            print("Testing getImageURLS args \033[91mFAILED\033[0m")
+            failed = True
+        if failed != True:
+            print("Run {} \033[92mPASSED\033[0m {}".format(i+1, " "*20))
+        else:
+            print("Run {} \033[91mFAILED\033[0m {}".format(i + 1, " " * 20))
     if failed:
-        raise SelfTest_Failed("Automated self test failed to gather images")
+        r34.session.close()
+        raise SelfTest_Failed("Automated self test \033[91mFAILED\033[0m to gather images")
     else:
-        print("Self Test Passed" + " "*20)
+        r34.session.close()
+        print("Self Test \033[92mPASSED\033[0m" + " "*20)
         exit(0)
     exit(1)
 
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     try:
         selfTest()
     except Exception as e:
