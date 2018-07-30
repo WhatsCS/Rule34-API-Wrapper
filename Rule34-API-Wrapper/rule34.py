@@ -119,6 +119,7 @@ class Rule34:
                 XMLData = await XMLData.read()
                 XMLData = ET.XML(XMLData)
                 XML = self.ParseXML(XMLData)
+            await self.session.close()
             return int(XML['posts']['@count'])
         return None
 
@@ -159,7 +160,9 @@ class Rule34:
             t = True
             tempURL = self.urlGen(tags=tags, PID=PID)
             while t:
-                with async_timeout.timeout(10):
+                with async_timeout.timeout(self.timeout):
+                    if self.session.closed:
+                        self.session = aiohttp.ClientSession(loop=self.loop)
                     async with self.session.get(url=tempURL) as XML:
                         XML = await XML.read()
                         XML = ET.XML(XML)
@@ -178,7 +181,7 @@ class Rule34:
             await self.session.close()
             return imgList
         else:
-            self.session.close()
+            await self.session.close()
             return None
 
     async def getPostData(self, PostID):
@@ -203,64 +206,123 @@ class Rule34:
         return None
 
 
+class Sync:
+    """Allows you to run the module without worrying about async"""
+    def __init__(self):
+        self.l = asyncio.get_event_loop()
+        self.r = Rule34(self.l)
+
+    def sessionclose(self):  # pragma: no cover
+        if not self.r.session.closed:
+            self.l.run_until_complete(self.r.session.close())
+
+    def getImageURLS(self, tags, fuzzy=False, singlePage=True, randomPID=True, OverridePID=None):
+        """gatherrs a list of image URLS
+        :param tags: the tags youre searching
+        :param fuzzy: enable or disable fuzzy search, default disabled
+        :param singlePage: when enabled, limits the search to one page (100 images), default disabled
+        :param randomPID: when enabled, a random pageID is used, if singlePage is disabled, this is disabled
+        :param OverridePID: Allows you to specify a PID
+        :return: list
+        """
+        data = self.l.run_until_complete(self.r.getImageURLS(tags, fuzzy, singlePage, randomPID, OverridePID))
+        return data
+
+    def getPostData(self, tags):
+        """Returns a dict with all the information available about the post
+        :param PostID: The ID of the post
+        :return: dict
+        """
+        return self.l.run_until_complete(self.r.getPostData(tags))
+
+    def totalImages(self, PostID):
+        """Returns the total amount of images for the tag
+        :param tags:
+        :return: int
+        """
+        return self.l.run_until_complete(self.r.totalImages(PostID))
+
+    @staticmethod
+    def URLGen(tags=None, limit=None, id=None, PID=None, deleted=None, **kwargs):
+        """Generates a URL to access the api using your input:
+        :param tags: str ||The tags to search for. Any tag combination that works on the web site will work here. This includes all the meta-tags
+        :param limit: str ||How many posts you want to retrieve
+        :param id: int ||The post id.
+        :param PID: int ||The page number.
+        :param deleted: bool||If True, deleted posts will be included in the data
+        :param kwargs:
+        :return: url string, or None
+        All arguments that accept strings *can* accept int, but strings are recommended
+        If none of these arguments are passed, None will be returned
+        """
+        return Rule34.urlGen(tags, limit, id, PID, deleted)
+
+
 def selfTest():  # pragma: no cover
     """
     Self tests the script for travis-ci
     """
-    loop = asyncio.get_event_loop()
     failed = False
-    r34 = Rule34(loop)
+    r34 = Sync()
     for i in range(10):
         try:
-            data = loop.run_until_complete(r34.getImageURLS("straight", singlePage=True))
+            data = r34.getImageURLS("straight", singlePage=True)
             if data is not None and len(data) != 0:
                 print("Get Image URLS \033[92mPASSED\033[0m run {}".format(i+1, " "*20), end="\r")
             else:
                 print("Get Image URLS \033[91mFAILED\033[0m run {}".format(i + 1, " " * 20))
                 failed = True
-            data = loop.run_until_complete(r34.getPostData(2852416 - i))
+            data = r34.getPostData(2852416 - i)
             if data is not None and len(data) >= 20:
                 print("Post Data \033[92mPASSED\033[0m run {}{}".format(i+1, " "*20), end="\r")
             else:
                 print("Post Data \033[91mFAILED\033[0m run {}{}".format(i + 1, " " * 20))
                 failed = True
-            data = loop.run_until_complete(r34.totalImages("straight"))
+            data = r34.totalImages("straight")
             if data is not None and data > 100:
                 print("Total Images \033[92mPASSED\033[0m run {}{}".format(i, " "*20), end="\r")
             else:
                 print("Post Data \033[91mFAILED\033[0m run {}{}".format(i + 1, " " * 20))
                 failed = True
+            url = r34.URLGen(tags="gay", limit=50)
+            if url != "https://rule34.xxx/index.php?page=dapi&s=post&q=index&limit=50&tags=gay&rating:explicit":
+                failed = True
+
         except aiohttp.errors.ClientOSError:
             print("aiohttp failed to connect, restarting")
             selfTest()
             return
         except Exception as e:
-            loop.run_until_complete(r34.session.close())
-            loop.close()
+            r34.sessionclose()
             raise SelfTest_Failed("Automated self test \033[91mFAILED\033[0m with this error:\n{}".format(sys.exc_info()))
         try:
             print("Testing getImageURLS args", end="\r")
-            data = loop.run_until_complete(r34.getImageURLS("straight", singlePage=True, OverridePID=1))
-            data = loop.run_until_complete(r34.getImageURLS("straight", singlePage=True, fuzzy=True))
-            data = loop.run_until_complete(r34.getImageURLS("porn", singlePage=False, randomPID=True))
+            data = r34.getImageURLS("straight", singlePage=True, OverridePID=1)
+            data = r34.getImageURLS("vore", singlePage=True, fuzzy=True)
+            data = r34.getImageURLS("porn", singlePage=False, randomPID=True)
+            if r34.getImageURLS("DNATESTMAGICCOODENOTHINGWILLRETURN") is not None:
+                failed = True
+            try:
+                r34.getImageURLS("straight", OverridePID=2001)
+            except Request_Rejected:
+                pass
         except Exception as e:
             print(e)
             print("Testing getImageURLS args \033[91mFAILED\033[0m")
             failed = True
+
         if failed != True:
             print("Run {} \033[92mPASSED\033[0m {}".format(i+1, " "*20))
         else:
             print("Run {} \033[91mFAILED\033[0m {}".format(i + 1, " " * 20))
     if failed:
-        loop.run_until_complete(r34.session.close())
+        r34.sessionclose()
         raise SelfTest_Failed("Automated self test \033[91mFAILED\033[0m to gather images")
     else:
-        loop.run_until_complete(r34.session.close())
+        r34.sessionclose()
         print("Self Test \033[92mPASSED\033[0m" + " "*20)
         exit(0)
     exit(1)
-
-
 
 if __name__ == "__main__":  # pragma: no cover
     try:

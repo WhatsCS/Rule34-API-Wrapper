@@ -8,24 +8,17 @@
 
 This is a simple module for simplifying access to the rule34.xxx API asynchronously
 
-To assist bot developers, this wrapper doesnt use ``requests`` at all. Instead it uses aiohttp and coroutines. 
-
-### If you arent coding asynchronously, simply use these lines when using this api:
+To assist bot developers, this wrapper doesnt use ``requests`` at all. Instead it uses aiohttp and coroutines. And to assist people who arent coding asynchronously, theres a class called ``Sync`` that allows this module to work without worrying about coroutines. 
+### If you arent coding asynchronously, simply use this code
 ```python
-import asyncio #allows you to call the coroutine
 import rule34
-loop = asyncio.get_event_loop() # create an async event loop
-rule34 = rule34.Rule34(loop) # call rule34 and give pass the event loop
-# and then when calling the wrapper, use this
-data = loop.run_until_complete(rule34.getImageURLS("SearchQuery"))
+rule34 = rule34.Sync()
+rule34.getImageURLS("SearchQuery")
 ```
-An update is coming to simplify this
-### If you are coding asynchronously use this:
+### If you are coding asynchronously use this code:
 ```python
-import asyncio
 import rule34
 rule34 = rule34.Rule34([your event loop])
-# and then when calling the wrapper, use this
 await rule34.getImageURLS("SearchQuery")
 ```
 # How do i install this?  
