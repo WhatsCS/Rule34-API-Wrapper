@@ -8,7 +8,7 @@
 
 This is a simple module for simplifying access to the rule34.xxx API asynchronously
 
-To assist bot developers, this wrapper doesnt use ``requests`` at all. Instead it uses aiohttp and coroutines. And to assist people who arent coding asynchronously, theres a class called ``Sync`` that allows this module to work without worrying about coroutines. 
+To assist bot developers, this wrapper doesnt use ``requests`` at all. Instead it uses aiohttp. And to assist people who arent coding asynchronously, theres a class called ``Sync`` that allows this module to work without worrying about coroutines. 
 ### If you arent coding asynchronously, simply use this code
 ```python
 import rule34
