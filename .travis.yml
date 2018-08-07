@@ -8,10 +8,11 @@ python:
 install:
   - pip install codecov
   - pip install pytest-cov
+  - pip install
 
 script:
   - python -m compileall ./ -f
-  - python Rule34-API-Wrapper/setup.py install
+  - pip install -e Rule34-API-Wrapper --upgrade
   - cd Rule34-API-Wrapper
   - pytest --cov=rule34 -v
 
