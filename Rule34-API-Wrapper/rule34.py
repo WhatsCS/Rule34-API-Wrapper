@@ -3,6 +3,7 @@ from __future__ import print_function
 import asyncio
 import math
 import random
+import os
 from collections import defaultdict
 from xml.etree import cElementTree as ET
 
@@ -206,13 +207,34 @@ class Rule34:
         return None
 
 
+    async def download(self, URL):
+        try:
+            if self.session.closed:
+                self.session = aiohttp.ClientSession(loop=self.loop)
+            async with self.session.get(URL) as resp:
+                assert resp.status == 200
+                i = 7
+                name = URL.split("/")[-1][-7:]
+                while os.path.isfile(name):
+                    i += 1
+                    name = URL.split("/")[-1][-i:]
+                data = await resp.read()
+            await self.session.close()
+            with open(name, "wb") as f:
+                f.write(data)
+        except Exception as e:
+            raise Rule34_Error(e)
+            return None
+        return name
+
+
 class Sync:
     """Allows you to run the module without worrying about async"""
     def __init__(self):
         self.l = asyncio.get_event_loop()
         self.r = Rule34(self.l)
 
-    def sessionclose(self):  # pragma: no cover
+    def sessionClose(self):  # pragma: no cover
         if not self.r.session.closed:
             self.l.run_until_complete(self.r.session.close())
 
@@ -235,12 +257,12 @@ class Sync:
         """
         return self.l.run_until_complete(self.r.getPostData(tags))
 
-    def totalImages(self, PostID):
+    def totalImages(self, tags):
         """Returns the total amount of images for the tag
         :param tags:
         :return: int
         """
-        return self.l.run_until_complete(self.r.totalImages(PostID))
+        return self.l.run_until_complete(self.r.totalImages(tags))
 
     @staticmethod
     def URLGen(tags=None, limit=None, id=None, PID=None, deleted=None, **kwargs):
@@ -257,76 +279,5 @@ class Sync:
         """
         return Rule34.urlGen(tags, limit, id, PID, deleted)
 
-
-def selfTest():  # pragma: no cover
-    """
-    Self tests the script for travis-ci
-    """
-    failed = False
-    r34 = Sync()
-    for i in range(10):
-        try:
-            data = r34.getImageURLS("straight", singlePage=True)
-            if data is not None and len(data) != 0:
-                print("Get Image URLS \033[92mPASSED\033[0m run {}".format(i+1, " "*20), end="\r")
-            else:
-                print("Get Image URLS \033[91mFAILED\033[0m run {}".format(i + 1, " " * 20))
-                failed = True
-            data = r34.getPostData(2852416 - i)
-            if data is not None and len(data) >= 20:
-                print("Post Data \033[92mPASSED\033[0m run {}{}".format(i+1, " "*20), end="\r")
-            else:
-                print("Post Data \033[91mFAILED\033[0m run {}{}".format(i + 1, " " * 20))
-                failed = True
-            data = r34.totalImages("straight")
-            if data is not None and data > 100:
-                print("Total Images \033[92mPASSED\033[0m run {}{}".format(i, " "*20), end="\r")
-            else:
-                print("Post Data \033[91mFAILED\033[0m run {}{}".format(i + 1, " " * 20))
-                failed = True
-            url = r34.URLGen(tags="gay", limit=50)
-            if url != "https://rule34.xxx/index.php?page=dapi&s=post&q=index&limit=50&tags=gay&rating:explicit":
-                failed = True
-
-        except aiohttp.errors.ClientOSError:
-            print("aiohttp failed to connect, restarting")
-            selfTest()
-            return
-        except Exception as e:
-            r34.sessionclose()
-            raise SelfTest_Failed("Automated self test \033[91mFAILED\033[0m with this error:\n{}".format(sys.exc_info()))
-        try:
-            print("Testing getImageURLS args", end="\r")
-            data = r34.getImageURLS("straight", singlePage=True, OverridePID=1)
-            data = r34.getImageURLS("vore", singlePage=True, fuzzy=True)
-            data = r34.getImageURLS("porn", singlePage=False, randomPID=True)
-            if r34.getImageURLS("DNATESTMAGICCOODENOTHINGWILLRETURN") is not None:
-                failed = True
-            try:
-                r34.getImageURLS("straight", OverridePID=2001)
-            except Request_Rejected:
-                pass
-        except Exception as e:
-            print(e)
-            print("Testing getImageURLS args \033[91mFAILED\033[0m")
-            failed = True
-
-        if failed != True:
-            print("Run {} \033[92mPASSED\033[0m {}".format(i+1, " "*20))
-        else:
-            print("Run {} \033[91mFAILED\033[0m {}".format(i + 1, " " * 20))
-    if failed:
-        r34.sessionclose()
-        raise SelfTest_Failed("Automated self test \033[91mFAILED\033[0m to gather images")
-    else:
-        r34.sessionclose()
-        print("Self Test \033[92mPASSED\033[0m" + " "*20)
-        exit(0)
-    exit(1)
-
-if __name__ == "__main__":  # pragma: no cover
-    try:
-        selfTest()
-    except Exception as e:
-        print(e)
-        exit(1)
+    def download(self, url):
+        return self.l.run_until_complete(self.r.download(url))
