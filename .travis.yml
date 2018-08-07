@@ -11,7 +11,8 @@ install:
 
 script:
   - python -m compileall ./ -f
-  - python setup.py install
+  - python Rule34-API-Wrapper/setup.py install
+  - cd Rule34-API-Wrapper
   - pytest --cov=rule34 -v
 
 after_success:
