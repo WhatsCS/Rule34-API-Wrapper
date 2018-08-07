@@ -50,7 +50,7 @@ Each function has a docstring that explains what it is, and what arguments it ne
 | limit         |A limit of how many posts you want|`urlGen([args],limit=100)` |str/int|
 | id            |An Id of the post                 |`urlGen(id=12312)`         |str/int|
 | PID           |Page number of the search         |`urlGen([args],PID=2`      |str/int|
-| deleted       |Adds deleted posts to your search |`urlGen(deleted=True`      |bool   |
+| deleted       |Adds deleted posts to your search |`urlGen(deleted=True)`      |bool   |
 
 - ``totalImages(tags)``  
   - returns an int of how many posts match a tag  
@@ -76,5 +76,12 @@ Each function has a docstring that explains what it is, and what arguments it ne
 | Argument      | Purpose                          |Usage                      | Type  |
 | ------------- |:--------------------------------:|:-------------------------:|:-----:|
 |PostID         |The ID of a post                  |`getPostData(12345)`       |str/int|
+
+- ``download(url)``
+  - Downloads an image when you provide a URL
+  
+| Argument      | Purpose                          |Usage                      | Type  |
+| ------------- |:--------------------------------:|:-------------------------:|:-----:|
+|URL            | The image's URL                  |`download("https://img.rule34.xxx/[...].jpg")`| string|               
 
 
