@@ -175,8 +175,9 @@ class Rule34:
                 else:
                     if isinstance(XML['posts']['post'], dict):
                         imgList.append(str((XML['posts']['post']["@file_url"])))
-                    for data in XML['posts']['post']:
-                        imgList.append(str(data['@file_url']))
+                    else:
+                        for data in XML['posts']['post']:
+                            imgList.append(str(data['@file_url']))
                 if singlePage:
                     await self.session.close()
                     return imgList
