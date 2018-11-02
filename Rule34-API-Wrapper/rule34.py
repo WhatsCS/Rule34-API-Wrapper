@@ -173,8 +173,11 @@ class Rule34:
                 if len(imgList) >= int(XML['posts']['@count']):  # "if we're out of images to process"
                     t = False  # "end the loop"
                 else:
-                    for data in XML['posts']['post']:
-                        imgList.append(str(data['@file_url']))
+                    if isinstance(XML['posts']['post'], dict):
+                        imgList.append(str((XML['posts']['post']["@file_url"])))
+                    else:
+                        for data in XML['posts']['post']:
+                            imgList.append(str(data['@file_url']))
                 if singlePage:
                     await self.session.close()
                     return imgList
