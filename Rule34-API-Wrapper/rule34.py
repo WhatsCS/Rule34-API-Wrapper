@@ -159,8 +159,8 @@ class Rule34:
             imgList = []
             XML = None
             t = True
-            tempURL = self.urlGen(tags=tags, PID=PID)
             while t:
+                tempURL = self.urlGen(tags=tags, PID=PID)
                 with async_timeout.timeout(self.timeout):
                     if self.session.closed:
                         self.session = aiohttp.ClientSession(loop=self.loop)
@@ -181,6 +181,7 @@ class Rule34:
                 if singlePage:
                     await self.session.close()
                     return imgList
+                print(PID)
                 PID += 1
             await self.session.close()
             return imgList
