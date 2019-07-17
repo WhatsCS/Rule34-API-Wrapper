@@ -181,7 +181,6 @@ class Rule34:
                 if singlePage:
                     await self.session.close()
                     return imgList
-                print(PID)
                 PID += 1
             await self.session.close()
             return imgList
