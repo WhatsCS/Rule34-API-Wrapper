@@ -21,6 +21,9 @@ import rule34
 rule34 = rule34.Rule34([your event loop])
 await rule34.getImageURLS("SearchQuery")
 ```
+
+For an example use case see: [Rule34 Downloader](https://github.com/LordOfPolls/Rule34-Downloader)
+
 # How do i install this?  
 ### From Pypi:  
 ``pip install rule34``
