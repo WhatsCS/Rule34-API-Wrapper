@@ -84,4 +84,6 @@ Each function has a docstring that explains what it is, and what arguments it ne
 | ------------- |:--------------------------------:|:-------------------------:|:-----:|
 |URL            | The image's URL                  |`download("https://img.rule34.xxx/[...].jpg")`| string|               
 
+# Like what I do?
 
+Why not buy me a coffee? http://paypal.me/LordOfPolls
