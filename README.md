@@ -13,13 +13,13 @@ To assist bot developers, this wrapper doesnt use ``requests`` at all. Instead i
 ```python
 import rule34
 rule34 = rule34.Sync()
-rule34.getImageURLS("SearchQuery")
+rule34.getImages("SearchQuery")
 ```
 ### If you are coding asynchronously use this code:
 ```python
 import rule34
 rule34 = rule34.Rule34([your event loop])
-await rule34.getImageURLS("SearchQuery")
+await rule34.getImages("SearchQuery")
 ```
 
 For an example use case see: [Rule34 Downloader](https://github.com/LordOfPolls/Rule34-Downloader)
@@ -43,49 +43,7 @@ I advise you dont modify ``.travis.yml`` or the function ``selfTest``, because t
 2. [Make an issue on github](https://github.com/LordOfPolls/Rule34-API-Wrapper/issues/new), and be as detailed as possible
 (screenshots and tracebacks help a lot)
 # How do i use it?  
-Each function has a docstring that explains what it is, and what arguments it needs, ill go over them simply here  
-- ``urlGen(tags, limit, id, PID, deleted)``  
-  - Generates a URL based on arguments which is used to obtain an XML document  
-
-| Argument      | Purpose                          |Usage                      | Type  |
-| ------------- |:--------------------------------:|:-------------------------:|:-----:|
-| tags          |A search term                     |`urlGen(tags="furry")`     |str/int|
-| limit         |A limit of how many posts you want|`urlGen([args],limit=100)` |str/int|
-| id            |An Id of the post                 |`urlGen(id=12312)`         |str/int|
-| PID           |Page number of the search         |`urlGen([args],PID=2`      |str/int|
-| deleted       |Adds deleted posts to your search |`urlGen(deleted=True)`      |bool   |
-
-- ``totalImages(tags)``  
-  - returns an int of how many posts match a tag  
-  
-| Argument      | Purpose                          |Usage                      | Type  |
-| ------------- |:--------------------------------:|:-------------------------:|:-----:|
-|tags           |A search term                     |`totalImages("furry")`     |str    |
-
-- ``getImageURLS(tags)``  
-  - returns a list of urls for every post's image/webm/gif
-  
-| Argument      | Purpose                          |Usage                      | Type  |
-| ------------- |:--------------------------------:|:-------------------------:|:-----:|
-|tags           |A search term                     |`getImageURLS(tags)`       |str    |
-|fuzzy          |Toggles fuzzy searching           |`getImageURLS(fuzzy=True)` |bool   |
-|randomPID      |Randomises the PID when singlePage is on|`getImageURLS(randomPID=True)`|bool|
-|singlePage     |Limits search to one page (100 images)|`getImageURLS(singlePage=True`|bool|
-|OverridePID    |Allows you to choose a PID        |`getImageURLS(OverridePID=1)`|int|
-
-- ``getPostData(PostID)``
-  - returns a dictionary of information about a post
-  
-| Argument      | Purpose                          |Usage                      | Type  |
-| ------------- |:--------------------------------:|:-------------------------:|:-----:|
-|PostID         |The ID of a post                  |`getPostData(12345)`       |str/int|
-
-- ``download(url)``
-  - Downloads an image when you provide a URL
-  
-| Argument      | Purpose                          |Usage                      | Type  |
-| ------------- |:--------------------------------:|:-------------------------:|:-----:|
-|URL            | The image's URL                  |`download("https://img.rule34.xxx/[...].jpg")`| string|               
+Documentation can be found in the wiki: https://github.com/LordOfPolls/Rule34-API-Wrapper/wiki
 
 # Like what I do?
 
