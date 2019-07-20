@@ -9,6 +9,10 @@
 This is a simple module for simplifying access to the rule34.xxx API asynchronously
 
 To assist bot developers, this wrapper doesnt use ``requests`` at all. Instead it uses aiohttp. And to assist people who arent coding asynchronously, theres a class called ``Sync`` that allows this module to work without worrying about coroutines. 
+
+# How do i use it?  
+Documentation can be found in the wiki: https://github.com/LordOfPolls/Rule34-API-Wrapper/wiki
+
 ### If you arent coding asynchronously, simply use this code
 ```python
 import rule34
@@ -42,8 +46,6 @@ I advise you dont modify ``.travis.yml`` or the function ``selfTest``, because t
 2. Breathe
 2. [Make an issue on github](https://github.com/LordOfPolls/Rule34-API-Wrapper/issues/new), and be as detailed as possible
 (screenshots and tracebacks help a lot)
-# How do i use it?  
-Documentation can be found in the wiki: https://github.com/LordOfPolls/Rule34-API-Wrapper/wiki
 
 # Like what I do?
 
