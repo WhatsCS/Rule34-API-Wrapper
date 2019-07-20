@@ -6,11 +6,11 @@ import random
 import os
 from collections import defaultdict
 from xml.etree import cElementTree as ET
-
 import aiohttp
 import async_timeout
-import sys
+import warnings
 
+from .objectClasses import Rule34Post
 
 class Rule34_Error(Exception):  # pragma: no cover
     """Rule34 rejected you"""
@@ -116,23 +116,96 @@ class Rule34:
             self.session = aiohttp.ClientSession(loop=self.loop)
         with async_timeout.timeout(10):
             url = self.urlGen(tags=tags, PID=0)
-            async with self.session.get(url=url) as XMLData:
-                XMLData = await XMLData.read()
-                XMLData = ET.XML(XMLData)
-                XML = self.ParseXML(XMLData)
+            async with self.session.get(url=url) as rawXML:
+                rawXML = await rawXML.read()
+                rawXML = ET.XML(rawXML)
+                XML = self.ParseXML(rawXML)
             await self.session.close()
             return int(XML['posts']['@count'])
         return None
 
-    async def getImageURLS(self, tags, fuzzy=False, singlePage=True, randomPID=True, OverridePID=None):
-        """gatherrs a list of image URLS
-        :param tags: the tags youre searching
+    async def getImages(self, tags, fuzzy=False, singlePage=True, randomPID=True, OverridePID=None):
+        """gatherers a list of image's and their respective data -- replacing getImageURLS
+        :param tags: the tags you're searching
         :param fuzzy: enable or disable fuzzy search, default disabled
         :param singlePage: when enabled, limits the search to one page (100 images), default disabled
         :param randomPID: when enabled, a random pageID is used, if singlePage is disabled, this is disabled
         :param OverridePID: Allows you to specify a PID
         :return: list
         """
+        if self.session.closed:  # Verify we have an active session (avoids errors)
+            self.session = aiohttp.ClientSession(loop=self.loop)
+        if fuzzy:
+            tags = tags.split(" ")
+            for tag in tags:
+                tag = tag + "~"
+            temp = " "
+            tags = temp.join(tags)
+        if randomPID is True and singlePage is False:
+            randomPID = False
+        num = await self.totalImages(tags)
+
+        if num != 0:
+            if OverridePID is not None:
+                if OverridePID >2000:
+                    raise Request_Rejected("Rule34 will reject PIDs over 2000")
+                PID = OverridePID
+            elif randomPID:
+                maxPID = 2000
+                if math.floor(num/100) < maxPID:
+                    maxPID = math.floor(num/100)
+                PID = random.randint(0, maxPID)
+            else:
+                PID = 0
+            imgList = []
+            XML = None
+            t = True
+            while t:
+                tempURL = self.urlGen(tags=tags, PID=PID)
+                with async_timeout.timeout(self.timeout):
+                    if self.session.closed:
+                        self.session = aiohttp.ClientSession(loop=self.loop)
+                    async with self.session.get(url=tempURL) as XML:
+                        XML = await XML.read()
+                        XML = ET.XML(XML)
+                        XML = self.ParseXML(XML)
+                if XML is None:
+                    return None
+                if len(imgList) >= int(XML['posts']['@count']):  # "if we're out of images to process"
+                    t = False  # "end the loop"
+                else:
+                    # if isinstance(XML['posts']['post'], dict):
+                    #     # Data is in dict, aka one image
+                    #     image = Rule34Post()  # create an image object
+                    #     image.parse(XML['posts']['post'])  # parse data into object
+                    #     imgList.append(image)  # add to image list
+                    # else:
+                    #     # Data is string, aka many images
+                    for post in XML['posts']['post']:
+                        image = Rule34Post()
+                        image.parse(post)
+                        imgList.append(image)
+                if singlePage:
+                    await self.session.close()
+                    return imgList
+                PID += 1
+            await self.session.close()
+            return imgList
+        else:
+            await self.session.close()
+            return None
+
+    async def getImageURLS(self, tags, fuzzy=False, singlePage=True, randomPID=True, OverridePID=None):
+        """gatherers a list of image URLS
+        :param tags: the tags you're searching
+        :param fuzzy: enable or disable fuzzy search, default disabled
+        :param singlePage: when enabled, limits the search to one page (100 images), default disabled
+        :param randomPID: when enabled, a random pageID is used, if singlePage is disabled, this is disabled
+        :param OverridePID: Allows you to specify a PID
+        :return: list
+        """
+        warnings.warn("Deprecated, use getImages instead", DeprecationWarning, stacklevel=1)
+
         if self.session.closed:
             self.session = aiohttp.ClientSession(loop=self.loop)
         if fuzzy:
@@ -193,6 +266,7 @@ class Rule34:
         :param PostID: The ID of the post
         :return: dict
         """
+
         if self.session.closed:
             self.session = aiohttp.ClientSession(loop=self.loop)
         url = self.urlGen(id=str(PostID))
@@ -241,9 +315,21 @@ class Sync:
         if not self.r.session.closed:
             self.l.run_until_complete(self.r.session.close())
 
+    def getImages(self, tags, fuzzy=False, singlePage=True, randomPID=True, OverridePID=None):
+        """gatherers a list of image's and their respective data -- replacing getImageURLS
+        :param tags: the tags you're searching
+        :param fuzzy: enable or disable fuzzy search, default disabled
+        :param singlePage: when enabled, limits the search to one page (100 images), default disabled
+        :param randomPID: when enabled, a random pageID is used, if singlePage is disabled, this is disabled
+        :param OverridePID: Allows you to specify a PID
+        :return: list
+        """
+        data = self.l.run_until_complete(self.r.getImages(tags, fuzzy, singlePage, randomPID, OverridePID))
+        return data
+
     def getImageURLS(self, tags, fuzzy=False, singlePage=True, randomPID=True, OverridePID=None):
-        """gatherrs a list of image URLS
-        :param tags: the tags youre searching
+        """gathers a list of image URLS
+        :param tags: the tags you're searching
         :param fuzzy: enable or disable fuzzy search, default disabled
         :param singlePage: when enabled, limits the search to one page (100 images), default disabled
         :param randomPID: when enabled, a random pageID is used, if singlePage is disabled, this is disabled

@@ -121,3 +121,45 @@ def test_imageGather_rejectRequest():
         pass
     except Exception as e:
         raise rule34.SelfTest_Failed(e)
+
+def test_imageGatherNew():
+    r34 = rule34.Sync()
+    assert (r34.getImages("straight") is not None)
+
+def test_imageGatherNew_total():
+    r34 = rule34.Sync()
+    assert (len(r34.getImages("straight")) == 100)
+
+def test_imageGatherNew_OverridePID():
+    r34 = rule34.Sync()
+    assert (r34.getImages("straight",
+                             singlePage=True,
+                             OverridePID=1) is not None)
+
+def test_imageGatherNew_fuzzy():
+    r34 = rule34.Sync()
+    assert (r34.getImages("vore",
+                             singlePage=True,
+                             fuzzy=True) is not None)
+
+
+def test_imageGatherNew_Contradiction():
+    r34 = rule34.Sync()
+    assert (r34.getImages("vore",
+                             singlePage=False,
+                             randomPID=True) is not None)
+
+
+def test_imageGatherNew_nonExist():
+    r34 = rule34.Sync()
+    assert (r34.getImages("DNATESTMAGICCOODENOTHINGWILLRETURN") is None)
+
+
+def test_imageGatherNew_rejectRequest():
+    r34 = rule34.Sync()
+    try:
+        r34.getImages("straight", fuzzy=True, OverridePID=2001)
+    except rule34.Request_Rejected:
+        pass
+    except Exception as e:
+        raise rule34.SelfTest_Failed(e)

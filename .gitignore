@@ -269,3 +269,4 @@ rule34.egg-info/
 
 .coverage
 coverage.xml
+temp.xml
