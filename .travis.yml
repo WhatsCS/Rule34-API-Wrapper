@@ -12,7 +12,7 @@ install:
 script:
   - python -m compileall ./ -f
   - pip install -e Rule34-API-Wrapper --upgrade
-  - cd Rule34-API-Wrapper
+  - cd Rule34-API-Wrapper/rule34
   - pytest --cov=rule34 -v
 
 after_success:
