@@ -287,7 +287,7 @@ class Rule34:
         return None
 
 
-    async def download(self, URL):
+    async def download(self, URL, destination=None):
         try:
             if self.session.closed:
                 self.session = aiohttp.ClientSession(loop=self.loop)
@@ -295,6 +295,8 @@ class Rule34:
                 assert resp.status == 200
                 i = 7
                 name = URL.split("/")[-1][-7:]
+                if destination:
+                    name = f"{destination}/{name}"
                 while os.path.isfile(name):
                     i += 1
                     name = URL.split("/")[-1][-i:]
