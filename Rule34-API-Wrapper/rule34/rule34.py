@@ -72,38 +72,41 @@ class Rule34:
         return d
 
     @staticmethod
-    def urlGen(tags=None, limit=None, id=None, PID=None, deleted=None, **kwargs):
+    def urlGen(tags=None, limit=None, ID=None, PID=None, deleted=None, rating="explicit", **kwargs):
         """Generates a URL to access the api using your input:
         :param tags: str ||The tags to search for. Any tag combination that works on the web site will work here. This includes all the meta-tags
         :param limit: str ||How many posts you want to retrieve
-        :param id: int ||The post id.
+        :param ID: int ||The post id.
         :param PID: int ||The page number.
         :param deleted: bool||If True, deleted posts will be included in the data
+        :param rating: The rating of the images, defaults to explicit
         :param kwargs:
         :return: url string, or None
+
         All arguments that accept strings *can* accept int, but strings are recommended
         If none of these arguments are passed, None will be returned
         """
         # I have no intentions of adding "&last_id=" simply because its response can easily be massive, and all it returns is ``<post deleted="[ID]" md5="[String]"/>`` which has no use as far as im aware
         URL = "https://rule34.xxx/index.php?page=dapi&s=post&q=index"
-        if PID != None:
+        if PID is not None:
             if PID > 2000:
                 raise Request_Rejected("Rule34 will reject PIDs over 2000")
             URL += "&pid={}".format(PID)
-        if limit != None:
+        if limit is not None:
             URL += "&limit={}".format(limit)
-        if id != None:
-            URL += "&id={}".format(id)
-        if tags != None:
+        if ID is not None:
+            URL += "&id={}".format(ID)
+        if tags is not None:
             tags = str(tags).replace(" ", "+")
             URL += "&tags={}".format(tags)
-        if deleted == True:
+        if deleted:
             URL += "&deleted=show"
-        if PID != None or limit != None or id != None or tags != None:
-            if id is not None:
+        if PID is not None or limit is not None or ID is not None or tags is not None:
+            if ID is not None:
                 return URL
             else:
-                return URL + "&rating:explicit"
+                return URL + f"&rating:{rating}"
+
         else:
             return None
 
@@ -269,7 +272,7 @@ class Rule34:
 
         if self.session.closed:
             self.session = aiohttp.ClientSession(loop=self.loop)
-        url = self.urlGen(id=str(PostID))
+        url = self.urlGen(ID=str(PostID))
         XML =None
         with async_timeout.timeout(10):
             async with self.session.get(url=url) as XML:
