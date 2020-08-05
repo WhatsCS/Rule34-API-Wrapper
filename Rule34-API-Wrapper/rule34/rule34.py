@@ -106,9 +106,9 @@ class Rule34:
                 return URL
             else:
                 if rating:
-                    return URL + f"&rating:{rating}"
+                    return URL + "&rating:" + rating
                 else:
-                    return URL + f"&rating:explicit"
+                    return URL + "&rating:explicit"
         else:
             return None
 
@@ -233,7 +233,7 @@ class Rule34:
                 i = 7
                 name = URL.split("/")[-1][-7:]
                 if destination:
-                    name = f"{destination}/{name}"
+                    name = "destination" + "/" + name
                 while os.path.isfile(name):
                     i += 1
                     name = URL.split("/")[-1][-i:]
