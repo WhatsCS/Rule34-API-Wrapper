@@ -6,14 +6,14 @@ import os
 def test_Sync():
     r34 = rule34.Sync()
     assert r34.l is not None
-    assert r34.getImageURLS("gay") is not None
+    assert r34.getImages("gay") is not None
 
 
 def test_async():
     import asyncio
     loop = asyncio.get_event_loop()
     r34 = rule34.Rule34(loop)
-    assert (len(loop.run_until_complete(r34.getImageURLS("gay"))) == 100)
+    assert (len(loop.run_until_complete(r34.getImages("gay"))) == 100)
 
 
 def test_postData():
@@ -80,47 +80,6 @@ def test_DownloadErrorCatch():
 def test_TotalImages():
     r34 = rule34.Sync()
     assert r34.totalImages("gay") > 1000
-
-
-def test_imageGather_Default():
-    r34 = rule34.Sync()
-    assert (r34.getImageURLS("straight") is not None)
-
-
-def test_imageGather_OverridePID():
-    r34 = rule34.Sync()
-    assert (r34.getImageURLS("straight",
-                             singlePage=True,
-                             OverridePID=1) is not None)
-
-
-def test_imageGather_fuzzy():
-    r34 = rule34.Sync()
-    assert (r34.getImageURLS("vore",
-                             singlePage=True,
-                             fuzzy=True) is not None)
-
-
-def test_imageGather_Contradiction():
-    r34 = rule34.Sync()
-    assert (r34.getImageURLS("vore",
-                             singlePage=False,
-                             randomPID=True) is not None)
-
-
-def test_imageGather_nonExist():
-    r34 = rule34.Sync()
-    assert (r34.getImageURLS("DNATESTMAGICCOODENOTHINGWILLRETURN") is None)
-
-
-def test_imageGather_rejectRequest():
-    r34 = rule34.Sync()
-    try:
-        r34.getImageURLS("straight", fuzzy=True, OverridePID=2001)
-    except rule34.Request_Rejected:
-        pass
-    except Exception as e:
-        raise rule34.SelfTest_Failed(e)
 
 def test_imageGatherNew():
     r34 = rule34.Sync()
