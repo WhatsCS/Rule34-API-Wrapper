@@ -41,8 +41,13 @@ class Rule34Post:
         """Processes the data returned by rule34 into a more useful object"""
         # If for whatever reason an attribute isn't in the data returned by r34, we set it to None
 
-        self.height = int(post['@height']) if '@height' in post else None
-        self.width = int(post['@width']) if '@width' in post else None
+        try:
+            self.height = int(post['@height']) if '@height' in post else None
+            self.width = int(post['@width']) if '@width' in post else None
+        except TypeError:
+            # Occasionally rule34 sends invalid height/width values, this catches that
+            pass
+
         self.score = int(post['@score']) if '@score' in post else None
         self.file_url = str(post['@file_url']) if '@file_url' in post else None
         self.id = str(post['@id']) if '@id' in post else None
