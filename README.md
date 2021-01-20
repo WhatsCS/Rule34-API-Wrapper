@@ -1,9 +1,9 @@
-[![](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper.svg?branch=master)](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper)
-[![](https://codecov.io/gh/LordOfPolls/Rule34-API-Wrapper/branch/master/graph/badge.svg)](https://codecov.io/gh/LordOfPolls/Rule34-API-Wrapper)
-[![](http://pepy.tech/badge/rule34)](http://pepy.tech/project/rule34)
-![](https://img.shields.io/pypi/pyversions/rule34.svg)
-![](https://img.shields.io/pypi/v/rule34.svg)
-![](https://img.shields.io/github/issues-raw/LordOfPolls/Rule34-API-Wrapper.svg)
+[![Build Status](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper.svg?branch=master)](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper)
+[![Test Coverage](https://codecov.io/gh/LordOfPolls/Rule34-API-Wrapper/branch/master/graph/badge.svg)](https://codecov.io/gh/LordOfPolls/Rule34-API-Wrapper)
+[![Downloads](https://static.pepy.tech/personalized-badge/rule34?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads)](https://pepy.tech/project/rule34)
+![Supported Versions](https://img.shields.io/pypi/pyversions/rule34.svg)
+![Latest Version](https://img.shields.io/pypi/v/rule34.svg)
+![Open Issues](https://img.shields.io/github/issues-raw/LordOfPolls/Rule34-API-Wrapper.svg)
 # Rule34.xxx API Wrapper
 
 This is a simple module for simplifying access to the rule34.xxx API asynchronously
