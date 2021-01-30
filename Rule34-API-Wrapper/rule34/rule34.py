@@ -4,6 +4,7 @@ import asyncio
 import math
 import random
 import os
+import atexit
 from collections import defaultdict
 from xml.etree import cElementTree as ET
 import aiohttp
@@ -42,6 +43,11 @@ class Rule34:
         self.session = aiohttp.ClientSession(loop=loop)
         self.timeout = timeout
         self.loop = loop
+        atexit.register(self._exitHandler)
+
+    def _exitHandler(self):
+        """Makes sure to close the session to avoid warnings"""
+        asyncio.run_coroutine_threadsafe(self.session.close(), loop=self.loop)
 
     def session(self):
         return self.session
