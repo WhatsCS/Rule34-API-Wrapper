@@ -35,14 +35,17 @@ class SelfTest_Failed(Exception):  # pragma: no cover
 
 
 class Rule34:
-    def __init__(self, loop, timeout=10):
+    def __init__(self, loop=None, timeout=10):
         """
-        :param loop: the event loop
-        :param timeout: how long requests are allowed to run until timing out
+        :param loop: the event loop. Defaults to none
+        :param timeout: how long requests are allowed to run until timing out. Defaults to 10
         """
-        self.session = aiohttp.ClientSession(loop=loop)
+        if loop:
+            self.loop = loop
+        else:
+            self.loop = asyncio.get_event_loop()
+        self.session = aiohttp.ClientSession(loop=self.loop)
         self.timeout = timeout
-        self.loop = loop
         atexit.register(self._exitHandler)
 
     def _exitHandler(self):
