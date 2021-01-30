@@ -279,12 +279,12 @@ class Sync:
         data = self.l.run_until_complete(self.r.getImages(tags, fuzzy, singlePage, randomPID, OverridePID, rating))
         return data
 
-    def getPostData(self, tags):
+    def getPostData(self, PostID):
         """Returns a dict with all the information available about the post
         :param PostID: The ID of the post
         :return: dict
         """
-        return self.l.run_until_complete(self.r.getPostData(tags))
+        return self.l.run_until_complete(self.r.getPostData(PostID))
 
     def totalImages(self, tags):
         """Returns the total amount of images for the tag
