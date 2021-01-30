@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='rule34',
-    version="1.7.5",
+    version="1.8.0",
     description='An async API wrapper for rule34.xxx',
     long_description= 'An async API wrapper for rule34.xxx using aiohttp',
     long_description_content_type='text/markdown',
@@ -27,10 +27,11 @@ setup(
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
 
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.5',  # will be unsupported soon
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8'],
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9'],
     keywords='rule34, porn, api, wrapper',
     project_urls={'Source': 'https://github.com/LordOfPolls/Rule34-API-Wrapper'},
     packages=find_packages(include=['rule34']),
