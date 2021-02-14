@@ -48,7 +48,7 @@ def test_Download():
     name = r34.download(downloadURL)
     assert name is not None
     assert os.path.isfile(name)
-    assert os.path.getsize(name) >= 76600
+    assert os.path.getsize(name) >= 70000
     os.unlink(name)
 
 
@@ -61,7 +61,7 @@ def test_DonwloadNameHandler():
     for name in names:
         assert name is not None
         assert os.path.isfile(name)
-        assert os.path.getsize(name) >= 76600
+        assert os.path.getsize(name) >= 70000
         os.unlink(name)
 
 
@@ -112,6 +112,10 @@ def test_imageGatherNew_Contradiction():
 def test_imageGatherNew_nonExist():
     r34 = rule34.Sync()
     assert (r34.getImages("DNATESTMAGICCOODENOTHINGWILLRETURN") is None)
+
+def test_singleResult():
+    r34 = rule34.Sync()
+    assert (r34.getImages("rule34") is not None)
 
 
 def test_imageGatherNew_rejectRequest():

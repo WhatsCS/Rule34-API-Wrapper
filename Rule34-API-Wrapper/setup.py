@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='rule34',
-    version="1.8.0",
+    version="1.8.1",
     description='An async API wrapper for rule34.xxx',
     long_description= 'An async API wrapper for rule34.xxx using aiohttp',
     long_description_content_type='text/markdown',
