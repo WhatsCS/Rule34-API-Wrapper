@@ -35,7 +35,7 @@ setup(
     keywords='rule34, porn, api, wrapper',
     project_urls={'Source': 'https://github.com/LordOfPolls/Rule34-API-Wrapper'},
     packages=find_packages(include=['rule34']),
-    install_requires=['asyncio', 'aiohttp'],
+    install_requires=['aiohttp'],
     python_requires='>=3.5',
     py_modules=["rule34"]
 )
