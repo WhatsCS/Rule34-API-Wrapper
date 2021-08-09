@@ -243,8 +243,10 @@ class Rule34:
                 assert resp.status == 200
                 i = 7
                 name = URL.split("/")[-1][-7:]
+                if not os.path.exists(destination):
+                    os.mkdir(destination)
                 if destination:
-                    name = "destination" + "/" + name
+                    name = destination + "/" + name
                 while os.path.isfile(name):
                     i += 1
                     name = URL.split("/")[-1][-i:]
@@ -310,5 +312,5 @@ class Sync:
         """
         return Rule34.urlGen(tags, limit, id, PID, deleted, rating)
 
-    def download(self, url):
-        return self.l.run_until_complete(self.r.download(url))
+    def download(self, url, destination=None):
+        return self.l.run_until_complete(self.r.download(url, destination))
