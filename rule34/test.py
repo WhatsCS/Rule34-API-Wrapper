@@ -23,7 +23,7 @@ def test_postData():
 
 def test_URLGen():
     r34 = rule34.Sync()
-    expectedString = "https://rule34.xxx/index.php?page=dapi&s=post&q=index&limit=50&tags=gay&deleted=show&rating:explicit"
+    expectedString = "https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&limit=50&tags=gay&deleted=show&rating:explicit"
     assert r34.URLGen(tags="gay", limit=50, deleted=True) == expectedString
 
 
