@@ -1,6 +1,7 @@
 <!-- I'll figure out this shit later lmao
 [![Build Status](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper.svg?branch=master)](https://travis-ci.com/LordOfPolls/Rule34-API-Wrapper) -->
-[![Test Coverage](https://codecov.io/gh/LordOfPolls/Rule34-API-Wrapper/branch/master/graph/badge.svg)](https://codecov.io/gh/LordOfPolls/Rule34-API-Wrapper)
+![build status](https://github.com/WhatsCS/Rule34-API-Wrapper/actions/workflows/python-package.yml/badge.svg)
+<!-- [![Test Coverage](https://codecov.io/gh/LordOfPolls/Rule34-API-Wrapper/branch/master/graph/badge.svg)](https://codecov.io/gh/LordOfPolls/Rule34-API-Wrapper) -->
 <!-- [![Downloads](https://static.pepy.tech/personalized-badge/rule34?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads)](https://pepy.tech/project/rule34) -->
 <!-- ![Supported Versions](https://img.shields.io/pypi/pyversions/rule34.svg) -->
 <!-- ![Latest Version](https://img.shields.io/pypi/v/rule34.svg) -->
