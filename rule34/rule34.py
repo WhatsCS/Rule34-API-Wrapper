@@ -9,7 +9,6 @@ from collections import defaultdict
 from xml.etree import cElementTree as ET
 import aiohttp
 import async_timeout
-import warnings
 
 from .objectClasses import Rule34Post
 
@@ -248,9 +247,8 @@ class Rule34:
             except ValueError:
                 return None
             return data
-        return None
 
-    async def download(self, URL, destination=None):
+    async def download(self, URL, destination='/tmp'):
         try:
             if self.session.closed:
                 self.session = aiohttp.ClientSession(loop=self.loop)
@@ -258,6 +256,7 @@ class Rule34:
                 assert resp.status == 200
                 i = 7
                 name = URL.split("/")[-1][-7:]
+                print(type(name), name)
                 if not os.path.exists(destination):
                     os.mkdir(destination)
                 if destination:
@@ -271,7 +270,6 @@ class Rule34:
                 f.write(data)
         except Exception as e:
             raise Rule34_Error(e)
-            return None
         return name
 
 
@@ -338,5 +336,5 @@ class Sync:
         """
         return Rule34.urlGen(tags, limit, id, PID, deleted, rating)
 
-    def download(self, url, destination=None):
+    def download(self, url, destination='/tmp'):
         return self.l.run_until_complete(self.r.download(url, destination))
