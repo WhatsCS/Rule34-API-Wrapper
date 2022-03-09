@@ -13,8 +13,10 @@ import warnings
 
 from .objectClasses import Rule34Post
 
+
 class Rule34_Error(Exception):  # pragma: no cover
     """Rule34 rejected you"""
+
     def __init__(self, message, *args):
         self.message = message
         super(Rule34_Error, self).__init__(message, *args)
@@ -22,6 +24,7 @@ class Rule34_Error(Exception):  # pragma: no cover
 
 class Request_Rejected(Exception):  # pragma: no cover
     """The Rule34 API wrapper rejected your request"""
+
     def __init__(self, message, *args):
         self.message = message
         super(Request_Rejected, self).__init__(message, *args)
@@ -29,6 +32,7 @@ class Request_Rejected(Exception):  # pragma: no cover
 
 class SelfTest_Failed(Exception):  # pragma: no cover
     """The self test failed"""
+
     def __init__(self, message, *args):
         self.message = message
         super(SelfTest_Failed, self).__init__(message, *args)
@@ -57,7 +61,7 @@ class Rule34:
 
     def ParseXML(self, rawXML):
         """Parses entities as well as attributes following this XML-to-JSON "specification"
-            Using https://stackoverflow.com/a/10077069"""
+        Using https://stackoverflow.com/a/10077069"""
         if "Search error: API limited due to abuse" in str(rawXML.items()):
             raise Rule34_Error('Rule34 rejected your request due to "API abuse"')
 
@@ -70,18 +74,20 @@ class Rule34:
                     dd[k].append(v)
             d = {rawXML.tag: {k: v[0] if len(v) == 1 else v for k, v in dd.items()}}
         if rawXML.attrib:
-            d[rawXML.tag].update(('@' + k, v) for k, v in rawXML.attrib.items())
+            d[rawXML.tag].update(("@" + k, v) for k, v in rawXML.attrib.items())
         if rawXML.text:
             text = rawXML.text.strip()
             if children or rawXML.attrib:
                 if text:
-                    d[rawXML.tag]['#text'] = text
+                    d[rawXML.tag]["#text"] = text
             else:
                 d[rawXML.tag] = text
         return d
 
     @staticmethod
-    def urlGen(tags=None, limit=None, ID=None, PID=None, deleted=None, rating=None, **kwargs):
+    def urlGen(
+        tags=None, limit=None, ID=None, PID=None, deleted=None, rating=None, **kwargs
+    ):
         """Generates a URL to access the api using your input:
         :param tags: str ||The tags to search for. Any tag combination that works on the web site will work here. This includes all the meta-tags
         :param limit: str ||How many posts you want to retrieve
@@ -135,10 +141,18 @@ class Rule34:
                 rawXML = ET.XML(rawXML)
                 XML = self.ParseXML(rawXML)
             await self.session.close()
-            return int(XML['posts']['@count'])
+            return int(XML["posts"]["@count"])
         return None
 
-    async def getImages(self, tags, fuzzy=False, singlePage=True, randomPID=True, OverridePID=None, rating=None):
+    async def getImages(
+        self,
+        tags,
+        fuzzy=False,
+        singlePage=True,
+        randomPID=True,
+        OverridePID=None,
+        rating=None,
+    ):
         """gatherers a list of image's and their respective data -- replacing getImageURLS
         :param tags: the tags you're searching
         :param fuzzy: enable or disable fuzzy search, default disabled
@@ -162,13 +176,13 @@ class Rule34:
 
         if num != 0:
             if OverridePID is not None:
-                if OverridePID >2000:
+                if OverridePID > 2000:
                     raise Request_Rejected("Rule34 will reject PIDs over 2000")
                 PID = OverridePID
             elif randomPID:
                 maxPID = 2000
-                if math.floor(num/100) < maxPID:
-                    maxPID = math.floor(num/100)
+                if math.floor(num / 100) < maxPID:
+                    maxPID = math.floor(num / 100)
                 PID = random.randint(0, maxPID)
             else:
                 PID = 0
@@ -186,10 +200,12 @@ class Rule34:
                         XML = self.ParseXML(XML)
                 if XML is None:
                     return None
-                if len(imgList) >= int(XML['posts']['@count']):  # "if we're out of images to process"
+                if len(imgList) >= int(
+                    XML["posts"]["@count"]
+                ):  # "if we're out of images to process"
                     t = False  # "end the loop"
                 else:
-                    for post in XML['posts'].items():
+                    for post in XML["posts"].items():
                         if post[0] == "post":
                             if isinstance(post[1], dict):
                                 image = Rule34Post()
@@ -221,19 +237,18 @@ class Rule34:
         if self.session.closed:
             self.session = aiohttp.ClientSession(loop=self.loop)
         url = self.urlGen(ID=str(PostID))
-        XML =None
+        XML = None
         with async_timeout.timeout(10):
             async with self.session.get(url=url) as XML:
                 XML = await XML.read()
             await self.session.close()
             try:
                 XML = self.ParseXML(ET.XML(XML))
-                data = XML['posts']['post']
+                data = XML["posts"]["post"]
             except ValueError:
                 return None
             return data
         return None
-
 
     async def download(self, URL, destination=None):
         try:
@@ -262,6 +277,7 @@ class Rule34:
 
 class Sync:
     """Allows you to run the module without worrying about async"""
+
     def __init__(self):
         self.l = asyncio.get_event_loop()
         self.r = Rule34(self.l)
@@ -270,7 +286,15 @@ class Sync:
         if not self.r.session.closed:
             self.l.run_until_complete(self.r.session.close())
 
-    def getImages(self, tags, fuzzy=False, singlePage=True, randomPID=True, OverridePID=None, rating=None):
+    def getImages(
+        self,
+        tags,
+        fuzzy=False,
+        singlePage=True,
+        randomPID=True,
+        OverridePID=None,
+        rating=None,
+    ):
         """gatherers a list of image's and their respective data -- replacing getImageURLS
         :param tags: the tags you're searching
         :param fuzzy: enable or disable fuzzy search, default disabled
@@ -280,7 +304,9 @@ class Sync:
         :param OverridePID: Allows you to specify a PID
         :return: list
         """
-        data = self.l.run_until_complete(self.r.getImages(tags, fuzzy, singlePage, randomPID, OverridePID, rating))
+        data = self.l.run_until_complete(
+            self.r.getImages(tags, fuzzy, singlePage, randomPID, OverridePID, rating)
+        )
         return data
 
     def getPostData(self, PostID):
