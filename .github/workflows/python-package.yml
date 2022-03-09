@@ -37,4 +37,4 @@ jobs:
     - name: Test with pytest
       run: |
         cd rule34
-        pytest
+        pipenv run pytest
