@@ -44,7 +44,7 @@ def test_URLGenReturnNone():
 
 def test_Download():
     r34 = rule34.Sync()
-    downloadURL = "https://img.rule34.xxx/images/2003/b90ae3f67eaa30669939531292d90e55d58325af.jpg"
+    downloadURL = "https://us.rule34.xxx//images/6083/789672ce7abe882dcb7d06a3da45c80d282f96ed.jpg"
     name = r34.download(downloadURL)
     assert name is not None
     assert os.path.isfile(name)
@@ -54,7 +54,7 @@ def test_Download():
 
 def test_DonwloadNameHandler():
     r34 = rule34.Sync()
-    downloadURL = "https://img.rule34.xxx/images/2003/b90ae3f67eaa30669939531292d90e55d58325af.jpg"
+    downloadURL = "https://us.rule34.xxx//images/6083/789672ce7abe882dcb7d06a3da45c80d282f96ed.jpg"
     names = []
     names.append(r34.download(downloadURL))
     names.append(r34.download(downloadURL))
