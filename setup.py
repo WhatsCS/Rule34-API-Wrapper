@@ -2,13 +2,13 @@ from setuptools import setup, find_packages
 
 setup(
     name="rule34",
-    version="1.8.1",
+    version="1.7.1",
     description="An async API wrapper for rule34.xxx",
     long_description="An async API wrapper for rule34.xxx using aiohttp",
     long_description_content_type="text/markdown",
-    url="https://github.com/LordOfPolls/Rule34-API-Wrapper",
-    author="LordOfPolls",
-    author_email="ddavidallen13@gmail.com",
+    url="https://github.com/WhatsCS/Rule34-API-Wrapper",
+    author="WhatsCS",
+    author_email="whatscs@jointheb.org",
     license="MIT",
     classifiers=[
         # How mature is this project? Common values are
@@ -23,16 +23,13 @@ setup(
         "License :: OSI Approved :: MIT License",
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        "Programming Language :: Python :: 3.5",  # will be unsupported soon
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
     keywords="rule34, porn, api, wrapper",
-    project_urls={"Source": "https://github.com/LordOfPolls/Rule34-API-Wrapper"},
+    project_urls={"Source": "https://github.com/WhatsCS/Rule34-API-Wrapper"},
     packages=find_packages(include=["rule34"]),
     install_requires=["aiohttp"],
-    python_requires=">=3.5",
+    python_requires=">=3.11",
     py_modules=["rule34"],
 )
